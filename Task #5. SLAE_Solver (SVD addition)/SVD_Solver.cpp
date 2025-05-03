@@ -1,11 +1,11 @@
-﻿#include "LinearAlgebra.h"
+#include "LinearAlgebra.h"
 #include <vector>
 #include <cmath>
 #include <algorithm>
-#include <limits>
 
-const double EPS = 1e-12;
-const int MAX_ITER = 100;
+const double SVD_EPS = 1e-14;  // increase SVD accuracy
+const int MAX_ITER = 10;
+const double SVD_THRESHOLD = 1e-10;
 
 // Calculating eigen values using QR decomposition
 void computeEigenvalues(const Matrix& A, Vector& eigenvalues, Matrix& eigenvectors) {
@@ -14,10 +14,11 @@ void computeEigenvalues(const Matrix& A, Vector& eigenvalues, Matrix& eigenvecto
     Matrix Q, R;
     eigenvectors = Matrix(n, Vector(n, 0.0));
 
-    for (int i = 0; i < n; ++i)
+    for (int i = 0; i < n; ++i) 
         eigenvectors[i][i] = 1.0;
 
     for (int iter = 0; iter < MAX_ITER; ++iter) {
+        
         householderQR(Ak, Q, R);
 
         Ak = multiply(R, Q);
@@ -27,8 +28,9 @@ void computeEigenvalues(const Matrix& A, Vector& eigenvalues, Matrix& eigenvecto
     }
 
     eigenvalues.resize(n);
-    for (int i = 0; i < n; ++i)
+    for (int i = 0; i < n; ++i) {
         eigenvalues[i] = Ak[i][i];
+    }
 
     for (int i = 0; i < n; ++i) {
         for (int j = i + 1; j < n; ++j) {
@@ -69,7 +71,7 @@ void svdDecomposition(const Matrix& A, Matrix& U, Vector& S, Matrix& Vt) {
     U = Matrix(m, Vector(k, 0.0));
     for (int i = 0; i < m; ++i) {
         for (int j = 0; j < k; ++j) {
-            if (S[j] > EPS) {
+            if (S[j] > SVD_EPS) {
                 for (int l = 0; l < n; ++l) {
                     U[i][j] += A[i][l] * Vt[j][l] / S[j];
                 }
@@ -77,21 +79,34 @@ void svdDecomposition(const Matrix& A, Matrix& U, Vector& S, Matrix& Vt) {
         }
     }
 
-    // 6. U's columns normalization
+    // 6. New U's columns normalization
     for (int j = 0; j < k; ++j) {
+
+        // first normalization
         double norm = 0.0;
         for (int i = 0; i < m; ++i) {
             norm += U[i][j] * U[i][j];
         }
         norm = sqrt(norm);
-
-        if (norm > EPS) {
+        if (norm > SVD_EPS) {
             for (int i = 0; i < m; ++i) {
                 U[i][j] /= norm;
             }
         }
+
+        // second normalization
+        for (int p = 0; p < j; ++p) {
+            double dot = 0.0;
+            for (int i = 0; i < m; ++i) {
+                dot += U[i][p] * U[i][j];
+            }
+            for (int i = 0; i < m; ++i) {
+                U[i][j] -= dot * U[i][p];
+            }
+        }
     }
 }
+
 
 Vector solveSVD(const Matrix& U, const Vector& S, const Matrix& Vt, const Vector& f) {
     int m = U.size();
@@ -107,8 +122,7 @@ Vector solveSVD(const Matrix& U, const Vector& S, const Matrix& Vt, const Vector
 
     // 2. diag(S)^(-1) * (Ut * f)
     double max_s = *std::max_element(S.begin(), S.end());
-    double threshold = max_s * std::max(m, n) * EPS;
-
+    double threshold = max_s * std::max(m, n) * SVD_THRESHOLD;
     for (int i = 0; i < S.size(); ++i) {
         if (S[i] > threshold) {
             y[i] /= S[i];
