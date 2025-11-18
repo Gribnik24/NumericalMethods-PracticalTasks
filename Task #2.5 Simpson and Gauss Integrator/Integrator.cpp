@@ -100,9 +100,9 @@ int main() {
     const int k_simpson = 4;
     const int k_gauss = 4;
 
-    // Аналитическое значение
+    // Аналитическое значение с высокой точностью
     double I_s = analytical_integral(a, b);
-    cout << "АНАЛИТИЧЕСКОЕ ЗНАЧЕНИЕ ИНТЕГРАЛА: I* = " << scientific << I_s << endl;
+    cout << "АНАЛИТИЧЕСКОЕ ЗНАЧЕНИЕ ИНТЕГРАЛА: I* = " << scientific << setprecision(16) << I_s << endl;
     cout << "==========================================" << endl;
 
     // Три вложенные сетки
@@ -123,7 +123,7 @@ int main() {
 
         double error = I_s - result;
         cout << "h = " << fixed << setprecision(2) << hs[i]
-            << " | I* - I^h = " << scientific << error << endl;
+            << " | I* - I^h = " << scientific << setprecision(16) << error << endl;
     }
 
     // Оценка порядка для Симпсона
@@ -135,20 +135,20 @@ int main() {
 
     // Данные для таблицы - Симпсон
     cout << "\nДАННЫЕ ДЛЯ ТАБЛИЦЫ - СИМПСОН:" << endl;
-    cout << "h=0.28: I*-I^h = " << scientific << I_s - Ih_simpson[0] << endl;
-    cout << "h=0.14: I*-I^h = " << scientific << I_s - Ih_simpson[1] << endl;
-    cout << "h=0.07: I*-I^h = " << scientific << I_s - Ih_simpson[2] << endl;
-    cout << "(I*-I^h)/(I*-I^{h/2}) для h=0.28 h/2=0.14: " << scientific << (I_s - Ih_simpson[0]) / (I_s - Ih_simpson[1]) << endl;
-    cout << "(I*-I^h)/(I*-I^{h/2}) для h=0.14  h/2=0.07: " << scientific << (I_s - Ih_simpson[1]) / (I_s - Ih_simpson[2]) << endl;
-    cout << "(I^{h/2}-I^h)/(2^k-1) для h=0.28 h/2=0.14: " << scientific << (Ih_simpson[1] - Ih_simpson[0]) / (pow(2, k_simpson) - 1) << endl;
-    cout << "(I^{h/2}-I^h)/(2^k-1) для h=0.14  h/2=0.07: " << scientific << (Ih_simpson[2] - Ih_simpson[0]) / (pow(2, k_simpson) - 1) << endl;
+    cout << "h=0.28: I*-I^h = " << scientific << setprecision(16) << I_s - Ih_simpson[0] << endl;
+    cout << "h=0.14: I*-I^h = " << scientific << setprecision(16) << I_s - Ih_simpson[1] << endl;
+    cout << "h=0.07: I*-I^h = " << scientific << setprecision(16) << I_s - Ih_simpson[2] << endl;
+    cout << "(I*-I^h)/(I*-I^{h/2}) для h=0.28 h/2=0.14: " << scientific << setprecision(16) << (I_s - Ih_simpson[0]) / (I_s - Ih_simpson[1]) << endl;
+    cout << "(I*-I^h)/(I*-I^{h/2}) для h=0.14  h/2=0.07: " << scientific << setprecision(16) << (I_s - Ih_simpson[1]) / (I_s - Ih_simpson[2]) << endl;
+    cout << "(I^{h/2}-I^h)/(2^k-1) для h=0.28 h/2=0.14: " << scientific << setprecision(16) << (Ih_simpson[1] - Ih_simpson[0]) / (pow(2, k_simpson) - 1) << endl;
+    cout << "(I^{h/2}-I^h)/(2^k-1) для h=0.14  h/2=0.07: " << scientific << setprecision(16) << (Ih_simpson[2] - Ih_simpson[1]) / (pow(2, k_simpson) - 1) << endl; // ИСПРАВЛЕНО
 
     double IR_simpson1 = runge_richardson(Ih_simpson[0], Ih_simpson[1], k_simpson);
     double IR_simpson2 = runge_richardson(Ih_simpson[1], Ih_simpson[2], k_simpson);
-    cout << "I^R для h=0.28 h/2=0.14: " << scientific << IR_simpson1 << endl;
-    cout << "I*-I^R для h=0.28 h/2=0.14: " << scientific << I_s - IR_simpson1 << endl;
-    cout << "I^R для h=0.14 h/2=0.07: " << scientific << IR_simpson2 << endl;
-    cout << "I*-I^R для h=0.14 h/2=0.07: " << scientific << I_s - IR_simpson2 << endl;
+    cout << "I^R для h=0.28 h/2=0.14: " << scientific << setprecision(16) << IR_simpson1 << endl;
+    cout << "I*-I^R для h=0.28 h/2=0.14: " << scientific << setprecision(16) << I_s - IR_simpson1 << endl;
+    cout << "I^R для h=0.14 h/2=0.07: " << scientific << setprecision(16) << IR_simpson2 << endl;
+    cout << "I*-I^R для h=0.14 h/2=0.07: " << scientific << setprecision(16) << I_s - IR_simpson2 << endl;
 
     // Метод Гаусса
     vector<double> Ih_gauss;
@@ -161,7 +161,7 @@ int main() {
 
         double error = I_s - result;
         cout << "h = " << fixed << setprecision(2) << hs[i]
-            << " | I* - I^h = " << scientific << error << endl;
+            << " | I* - I^h = " << scientific << setprecision(16) << error << endl;
     }
 
     // Оценка порядка для Гаусса
@@ -173,20 +173,20 @@ int main() {
 
     // Данные для таблицы - Гаусс
     cout << "\nДАННЫЕ ДЛЯ ТАБЛИЦЫ - ГАУСС-2:" << endl;
-    cout << "h=0.28: I*-I^h = " << scientific << I_s - Ih_gauss[0] << endl;
-    cout << "h=0.14: I*-I^h = " << scientific << I_s - Ih_gauss[1] << endl;
-    cout << "h=0.07: I*-I^h = " << scientific << I_s - Ih_gauss[2] << endl;
-    cout << "(I*-I^h)/(I*-I^{h/2}) для h=0.28 h/2=0.14: " << scientific << (I_s - Ih_gauss[0]) / (I_s - Ih_gauss[1]) << endl;
-    cout << "(I*-I^h)/(I*-I^{h/2}) для h=0.14  h/2=0.07: " << scientific << (I_s - Ih_gauss[1]) / (I_s - Ih_gauss[2]) << endl;
-    cout << "(I^{h/2}-I^h)/(2^k-1) для h=0.28 h/2=0.14: " << scientific << (Ih_gauss[1] - Ih_gauss[0]) / (pow(2, k_gauss) - 1) << endl;
-    cout << "(I^{h/2}-I^h)/(2^k-1) для h=0.14  h/2=0.07: " << scientific << (Ih_gauss[2] - Ih_gauss[0]) / (pow(2, k_gauss) - 1) << endl;
+    cout << "h=0.28: I*-I^h = " << scientific << setprecision(16) << I_s - Ih_gauss[0] << endl;
+    cout << "h=0.14: I*-I^h = " << scientific << setprecision(16) << I_s - Ih_gauss[1] << endl;
+    cout << "h=0.07: I*-I^h = " << scientific << setprecision(16) << I_s - Ih_gauss[2] << endl;
+    cout << "(I*-I^h)/(I*-I^{h/2}) для h=0.28 h/2=0.14: " << scientific << setprecision(16) << (I_s - Ih_gauss[0]) / (I_s - Ih_gauss[1]) << endl;
+    cout << "(I*-I^h)/(I*-I^{h/2}) для h=0.14  h/2=0.07: " << scientific << setprecision(16) << (I_s - Ih_gauss[1]) / (I_s - Ih_gauss[2]) << endl;
+    cout << "(I^{h/2}-I^h)/(2^k-1) для h=0.28 h/2=0.14: " << scientific << setprecision(16) << (Ih_gauss[1] - Ih_gauss[0]) / (pow(2, k_gauss) - 1) << endl;
+    cout << "(I^{h/2}-I^h)/(2^k-1) для h=0.14  h/2=0.07: " << scientific << setprecision(16) << (Ih_gauss[2] - Ih_gauss[1]) / (pow(2, k_gauss) - 1) << endl; // ИСПРАВЛЕНО
 
     double IR_gauss1 = runge_richardson(Ih_gauss[0], Ih_gauss[1], k_gauss);
     double IR_gauss2 = runge_richardson(Ih_gauss[1], Ih_gauss[2], k_gauss);
-    cout << "I^R для h=0.28 h/2=0.14: " << scientific << IR_gauss1 << endl;
-    cout << "I*-I^R для h=0.28 h/2=0.14: " << scientific << I_s - IR_gauss1 << endl;
-    cout << "I^R для h=0.14 h/2=0.07: " << scientific << IR_gauss2 << endl;
-    cout << "I*-I^R для h=0.14 h/2=0.07: " << scientific << I_s - IR_gauss2 << endl;
+    cout << "I^R для h=0.28 h/2=0.14: " << scientific << setprecision(16) << IR_gauss1 << endl;
+    cout << "I*-I^R для h=0.28 h/2=0.14: " << scientific << setprecision(16) << I_s - IR_gauss1 << endl;
+    cout << "I^R для h=0.14 h/2=0.07: " << scientific << setprecision(16) << IR_gauss2 << endl;
+    cout << "I*-I^R для h=0.14 h/2=0.07: " << scientific << setprecision(16) << I_s - IR_gauss2 << endl;
 
     return 0;
 }
